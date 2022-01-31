@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NovaSerie as EventsNovaSerie;
+use App\Mail\NovaSerie;
 use App\Models\Serie;
+use App\Models\User;
 use App\Service\CriarSerie;
 use App\Service\RemoveSerie;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class SeriesController extends Controller
-{    
+{
     public function create(): View
     {
         return View('series.create');
@@ -30,16 +34,18 @@ class SeriesController extends Controller
         $temporadas = $request->get('temporada');
         $epTemporada = $request->get('ep_tempo');
 
-        $serie = $serie->criarSerie($nome, $temporadas, $epTemporada);           
+        event(new EventsNovaSerie($nome, $temporadas, $epTemporada));        
+
+        $serie = $serie->criarSerie($nome, $temporadas, $epTemporada);
 
         $request->session()->flash('msg', "Serie {$nome}, Temp: {$temporadas}, Eps: {$epTemporada} Created With Success!");
 
         return \redirect('/series');
     }
-    
+
     public function destroy(Request $request, RemoveSerie $removeSerie)
     {
-        $serie = $removeSerie->removeSerie($request->id);        
+        $serie = $removeSerie->removeSerie($request->id);
 
         $request->session()->flash('msg', "Serie {$serie} Removed With Success!");
 
@@ -50,7 +56,7 @@ class SeriesController extends Controller
     {
         $serie = Serie::find($id);
 
-        $serie->nome = $request->nome;   
+        $serie->nome = $request->nome;
 
         $serie->save();
     }
