@@ -6,6 +6,7 @@ use App\Models\Episodio;
 use App\Models\Serie;
 use App\Models\Temporada;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class RemoveSerie
 {
@@ -18,6 +19,10 @@ class RemoveSerie
 
         $this->removeTemporada($serie);    
         $serie->delete();
+
+        if ($serie->capa) {
+            Storage::delete($serie->capa);
+        }
 
         DB::commit();     
 

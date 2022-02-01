@@ -9,7 +9,6 @@ use App\Models\User;
 use App\Service\CriarSerie;
 use App\Service\RemoveSerie;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class SeriesController extends Controller
@@ -33,10 +32,15 @@ class SeriesController extends Controller
         $nome = $request->get('nome');
         $temporadas = $request->get('temporada');
         $epTemporada = $request->get('ep_tempo');
+        $capa = null;
 
-        event(new EventsNovaSerie($nome, $temporadas, $epTemporada));        
+        if ($request->hasFile('capa')) {
+            $capa = $request->file('capa')->store('public/serie');
+        }
 
-        $serie = $serie->criarSerie($nome, $temporadas, $epTemporada);
+        $serie = $serie->criarSerie($nome, $temporadas, $epTemporada, $capa);
+
+        event(new EventsNovaSerie($nome, $temporadas, $epTemporada));       
 
         $request->session()->flash('msg', "Serie {$nome}, Temp: {$temporadas}, Eps: {$epTemporada} Created With Success!");
 

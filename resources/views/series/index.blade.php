@@ -16,7 +16,10 @@
     <ul class="list-group">
         @foreach ($series as $serie)
             <li class="d-flex justify-content-between align-items-center list-group-item">
-                <span id="nome-serie-{{ $serie->id }}">{{ $serie->nome }}</span>
+                <div>
+                    <img src="{{ $serie->getCapaUrlAttribute() }}" alt="capa" class="img-thumbanil mr-2" height="100px" width="100px">
+                    <span id="nome-serie-{{ $serie->id }}">{{ $serie->nome }}</span>
+                </div>
 
                 <div class="input-group w-50" hidden id="input-nome-serie-{{ $serie->id }}">
                     <input type="text" class="form-control" value="{{ $serie->nome }}">
@@ -39,7 +42,7 @@
                     </div>
 
                     @auth
-                    <div class="mr-1">
+                    <div>
                         <form action="/series/remove/{{ $serie->id }}" method="post" onsubmit="return confirm('Excluir {{ $serie->nome }} ?')">
                             @csrf @method('DELETE')
                             <button class="btn btn-danger btn-sm">Remover</button>
